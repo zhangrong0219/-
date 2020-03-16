@@ -1,12 +1,12 @@
 //定义一个空数组
-let usrArr = [];
+let userArr = [];
 //发送请求
 $.ajax({
    type:'get',
    url:'/users',
    success:function(res){
        //console.log(res);//打印出来的是用户列表
-       usrArr = res;
+       userArr = res;
        render();
    }
 })
@@ -14,7 +14,7 @@ $.ajax({
 //封装渲染页面模板
 function render(){
      //拼接模板
-     let html = template('userTpl',{data:usrArr});
+     let html = template('userTpl',{data:userArr});
     //  console.log(html);
     //把拼接好的数据追加到页面的tbody中
     $('tbody').html(html);
@@ -46,4 +46,36 @@ $('#avatar').on('change',function(){
             $('#hidden').val(res[0].avatar)
         }
     })
-})
+});
+
+//实现添加用户功能
+//给按钮添加点击事件
+$('#btn').on('click',function(){
+    //获取form表单里面的内容，用到表单里面的serialize方法，不仅可以获取表单的内容还可以把表单内容格式化为参数字符串
+    let data = $("form").serialize();
+    //发送添加用户请求
+    $.ajax({
+        type:'post',
+        url:'/users',
+        data:data,
+        success:function(res) {
+           //把返回的数据追加到数组中
+           userArr.push(res);
+           //重新渲染页面
+           render();  
+           //添加完后清空表单数据
+           $('#previewImg').attr('src','../assets/img/default.png');
+           $('#hidden').val('');
+           $('input[name="email"]').val('');
+           $('input[name="nickName"]').val('');
+           $('input[name="password"]').val('');
+           $('#status0').prop('checked',false);
+           $('#status1').prop('checked',false);
+           $('#admin').prop('checked',false);
+           $('#normal').prop('checked',false);
+        },
+        error:function(err) {
+            console.log(err)
+        }
+    })
+});

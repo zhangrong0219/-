@@ -17,9 +17,9 @@ module.exports = async (req, res) => {
 	if (user) return res.status(400).send({message: '邮箱已经被注册'});
 	// 用户不存在 可以正常执行注册流程
 	// 生成盐
-	const salt =  bcrypt.genSalt(10);
+	const salt =  bcrypt.genSaltSync(10);
 	// 使用盐对密码进行加密
-	req.fields.password =  bcrypt.hash(req.fields.password, salt);
+	req.fields.password =  bcrypt.hashSync(req.fields.password, salt);
 	// 创建用户
 	user = new User(req.fields);
 	// 保存用户

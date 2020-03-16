@@ -1,7 +1,9 @@
 <script src="/login/status"></script>
 <script>
   //如果用户isLogin不为真，就直接跳转到登录界面，isLogin是接口文档提供的参数
-    if(!isLogin) location.href = 'login.html';
+    if(!isLogin) {
+      location.href = '/admin/login.html';
+    }
 </script>
 <!DOCTYPE html>
 <html lang="zh-CN">
