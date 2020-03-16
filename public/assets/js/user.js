@@ -152,4 +152,27 @@ $('#btnEdit').on('click',function(){
             $('#btn').show();
         }
     })
+});
+
+//完成删除功能
+$('tbody').on('click','.del',function(){
+    //获取当前点击的数据id
+    let id = $(this).attr('data-id');
+    //弹出是否确认删除框
+    let isConfirm = confirm('您确认删除吗？');
+    if(isConfirm){
+        //发送请求
+        $.ajax({
+            type:'delete',
+            url:'/users/'+id,
+            success:function(res){
+                //获得点击的当前元素的下标
+                let index = userArr.findIndex(item => res._id == item._id);
+                //删除数组对应下标的数据
+                userArr.splice(index,1);
+                //重新渲染页面
+                render();
+            }
+        })
+    }
 })
