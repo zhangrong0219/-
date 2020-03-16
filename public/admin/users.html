@@ -42,9 +42,11 @@
               <div class="form-group">
                 <label class="form-image">
                   <input id="avatar" type="file">
-                  <img src="../assets/img/default.png">
+                  <img src="../assets/img/default.png" id="previewImg">
                   <i class="mask fa fa-upload"></i>
                 </label>
+                <!-- 隐藏域，用来暂存图片的地址,name的名字要保持和创建用户里规定的头像参数名称一样 -->
+                <input type="hidden" name="avatar" id="hidden">
               </div>
             </div>
             <div class="form-group">
