@@ -59,8 +59,8 @@ $('#btn').on('click',function(){
         url:'/users',
         data:data,
         success:function(res) {
-           //把返回的数据追加到数组中
-           userArr.push(res);
+           //把返回的数据追加到数组中的最前面
+           userArr.unshift(res);
            //重新渲染页面
            render();  
            //添加完后清空表单数据
@@ -80,8 +80,12 @@ $('#btn').on('click',function(){
     })
 });
 
+//定义一个存储用户信息id的全局变量
+var userId;
 //给编辑按钮注册点击事件，注意编辑按钮是后来创建的，所以需要用到事件委托事件
 $('tbody').on('click','.edit',function(){
+    //获取当前编辑的用户的自定义id
+    userId=$(this).attr('data-id');
     //把h2里面添加改为编辑
     $('h2').html('编辑');
     //获取到tbody里面的tr
@@ -89,8 +93,11 @@ $('tbody').on('click','.edit',function(){
     //把右边tbody里面的数据取到放到左边form表单对应的框中
     $('#previewImg').attr('src',tr.find('img').attr('src'));
     $('#hidden').val(tr.find('img').attr('src'));
-    $('input[name="email"]').val(tr.children().eq(2).text());
+    //获取到邮箱内容后把当前这个输入框禁用，禁止修改
+    $('input[name="email"]').prop('disabled', true).val(tr.children().eq(2).text());
     $('input[name="nickName"]').val(tr.children().eq(3).text());
+    //获取到密码框内容后把当前这个输入框禁用，禁止修改
+    $('input[name="password"]').prop('disabled',true);
     if(tr.children().eq(4).text() == '激活'){
         $('#status1').prop('checked',true)
     }else{
@@ -106,4 +113,43 @@ $('tbody').on('click','.edit',function(){
     $('#btn').hide();
     $('#btnEdit').show();
 
+});
+
+//给编辑按钮注册点击事件
+$('#btnEdit').on('click',function(){
+    //获取表单的数据
+    let data = $("form").serialize();
+    //发送请求
+    $.ajax({
+        type: 'PUT',
+        url: '/users/'+ userId,
+        data: data,
+        success:function(res){
+            // console.log(res);//得到的是修改后的用户所有的信息
+            //获得点击的当前元素的下标
+            let index = userArr.findIndex(item => res._id == item._id);
+            //res的内容赋值给对应下标数组对象
+            userArr[index] = res;
+            //重新渲染页面
+            render();
+            //把编辑用户里面的信息全部删除，变更为添加用户界面
+            //恢复h2里面的标题文字
+            $('h2').text('添加新用户');
+            //头像框改为默认的图片
+            $('#previewImg').prop('src','../assets/img/default.png');
+            //隐藏域里面的内容清空
+            $('#hidden').val('');
+            //清空表单里面的内容，禁用按钮恢复
+            $('input[name="email"]').prop('disabled', false).val('');
+            $('input[name="nickName"]').val('');
+            $('input[name="password"]').prop('disabled',false);
+            $('#status0').prop('checked',false);
+            $('#status1').prop('checked',false);
+            $('#admin').prop('checked',false);
+            $('#normal').prop('checked',false);
+            //编辑按钮隐藏，添加按钮显示
+            $('#btnEdit').hide();
+            $('#btn').show();
+        }
+    })
 })
