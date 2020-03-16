@@ -79,3 +79,31 @@ $('#btn').on('click',function(){
         }
     })
 });
+
+//给编辑按钮注册点击事件，注意编辑按钮是后来创建的，所以需要用到事件委托事件
+$('tbody').on('click','.edit',function(){
+    //把h2里面添加改为编辑
+    $('h2').html('编辑');
+    //获取到tbody里面的tr
+    let tr = $(this).parents('tr');
+    //把右边tbody里面的数据取到放到左边form表单对应的框中
+    $('#previewImg').attr('src',tr.find('img').attr('src'));
+    $('#hidden').val(tr.find('img').attr('src'));
+    $('input[name="email"]').val(tr.children().eq(2).text());
+    $('input[name="nickName"]').val(tr.children().eq(3).text());
+    if(tr.children().eq(4).text() == '激活'){
+        $('#status1').prop('checked',true)
+    }else{
+        $('#status0').prop('checked',true)
+    };
+    if(tr.children().eq(5).text() == '超级管理员'){
+        $('#admin').prop('checked',true)
+    }else{
+        $('#normal').prop('checked',true)
+    };
+
+    //隐藏添加用户按钮，显示编辑按钮
+    $('#btn').hide();
+    $('#btnEdit').show();
+
+})
