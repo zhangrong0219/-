@@ -154,7 +154,7 @@ $('#btnEdit').on('click',function(){
     })
 });
 
-//完成删除功能
+//完成删除单个用户功能
 $('tbody').on('click','.del',function(){
     //获取当前点击的数据id
     let id = $(this).attr('data-id');
@@ -175,4 +175,64 @@ $('tbody').on('click','.del',function(){
             }
         })
     }
-})
+});
+
+//实现全选
+//给全选复选框注册点击事件
+$('.checkAll').on('click',function(){
+    //下面单个复选框的状态和全选复选框的状态保持一致
+    $('.check').prop('checked',$(this).prop('checked'));
+    //如果全选按钮点击后显示批量删除按钮
+    if($(this).prop('checked')){
+        //显示批量删除按钮
+        $('#delAll').show();
+    }else{
+        //隐藏批量删除按钮
+        $('#delAll').hide();
+    }
+});
+
+//实现反选
+$('tbody').on('click', '.check', function () {
+    //判断下面复选框的长度和选中状态的长度是否一致，一致的话全选按钮就被选中
+    $('.checkAll').prop('checked', $('.check').length == $('.check:checked').length);
+    //显示批量删除按钮，条件是下面复选框选中个数至少有两个才可以
+    if($('.check:checked').length >= 2){
+        //显示批量删除按钮
+        $('#delAll').show();
+    }else{
+        //隐藏批量删除按钮
+        $('#delAll').hide();
+    }
+});
+
+//给批量删除按钮注册点击事件
+$('#delAll').on('click',function(){
+    //定义一个空数组，后面需要把获取的多个id放在数组中
+    var arr = [];
+    //遍历已经被选中的的复选框
+    $('.check:checked').each(function(index, ele){
+       //获得所有被选中的复选框当前的tr的id
+       arr.push($(ele).parents('tr').attr('data-id'));
+       
+    });
+
+    if(confirm('您确定要删除这几个用户信息吗？')){
+        //发送批量删除请求
+        $.ajax({
+            type:'delete',
+            url:'/users/' + arr.join('-'),
+            success:function(res){
+                res.forEach(item =>{
+                    //获得点击的当前元素的下标
+                    let index = userArr.findIndex(ele => item._id == ele._id);
+                    //删除数组对应下标的数据
+                    userArr.splice(index,1);
+                    //重新渲染页面
+                    render();
+                })
+               
+            }
+        })
+    }  
+});
