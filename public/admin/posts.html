@@ -36,15 +36,15 @@
         <!-- show when multiple checked -->
         <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
         <form class="form-inline">
-          <select name="" class="form-control input-sm">
-            <option value="">所有分类</option>
+          <select name="" class="form-control input-sm" id="category">
+            <option value="all">所有分类</option>
           </select>
-          <select name="" class="form-control input-sm">
-            <option value="">所有状态</option>
-            <option value="">草稿</option>
-            <option value="">已发布</option>
+          <select name="" class="form-control input-sm" id="state">
+            <option value="all">所有状态</option>
+            <option value="0">草稿</option>
+            <option value="1">已发布</option>
           </select>
-          <button class="btn btn-default btn-sm">筛选</button>
+          <button class="btn btn-default btn-sm" type="button" id="search">筛选</button>
         </form>
         <ul class="pagination pagination-sm pull-right">
           
@@ -141,7 +141,12 @@
     {{/if}}
   </script>
 
- 
+  <!-- 再创建一个用来做筛选的模板 -->
+  <script type="text/html" id="cTpl">
+    {{each data}}
+    <option value="{{$value._id}}">{{$value.title}}</option>
+    {{/each}}
+  </script>
   <script>NProgress.done()</script>
 </body>
 </html>
