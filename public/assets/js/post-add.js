@@ -128,4 +128,4 @@ $('#btnEdit').on('click',function(){
             location.href = 'posts.html'
         }
     })
-});
+})
