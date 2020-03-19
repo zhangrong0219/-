@@ -164,6 +164,31 @@
         location.reload();//刷新页面
       }
     })
+  });
+
+  //向网站发送获取网站配置数据的请求
+  $.ajax({
+    type:'get',
+    url:'/settings',
+    success:function(res){
+      //判断是否有设置过，如果有设置过网站数据就把数据显示在页面上
+      if(res){
+        console.log(res);
+        //显示图片
+        $('#image').prop('src',res.logo);
+        //把图片地址放在隐藏域中
+        $('#hidden').val(res.logo);
+        //显示网站名称
+        $('#site_name').val(res.title);
+
+        //没有提供站点描述和站点关键词的接口，所以无法获取对应的数据
+
+        //获取当前设置的开启评论功能以及评论必须经人工批准的选中状态
+        $('#comment_status').prop('checked',res.comment);
+        $('#comment_reviewed').prop('checked',res.review);
+      }
+      
+    }
   })
   </script>
 
