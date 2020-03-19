@@ -43,18 +43,19 @@
               <label for="image">图片</label>
               <!-- show when image chose -->
               <img class="help-block thumbnail" style="display: none">
-              <input id="image" class="form-control" name="image" type="file">
+              <input id="image" class="form-control" type="file">
+              <input type="hidden" name="image" id="hidden">
             </div>
             <div class="form-group">
               <label for="text">文本</label>
-              <input id="text" class="form-control" name="text" type="text" placeholder="文本">
+              <input id="text" class="form-control" name="title" type="text" placeholder="文本">
             </div>
             <div class="form-group">
               <label for="link">链接</label>
               <input id="link" class="form-control" name="link" type="text" placeholder="链接">
             </div>
             <div class="form-group">
-              <button class="btn btn-primary" type="submit">添加</button>
+              <button class="btn btn-primary" type="button" id="addBtn">添加</button>
             </div>
           </form>
         </div>
@@ -69,22 +70,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="text-center"><img class="slide" src="../uploads/slide_1.jpg"></td>
-                <td>XIU功能演示</td>
-                <td>#</td>
-                <td class="text-center">
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-center"><img class="slide" src="../uploads/slide_2.jpg"></td>
-                <td>XIU功能演示</td>
-                <td>#</td>
-                <td class="text-center">
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
+              
             </tbody>
           </table>
         </div>
@@ -131,7 +117,100 @@
 
   <script src="../assets/vendors/jquery/jquery.js"></script>
   <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="../assets/vendors/art-template/template-web.js"></script>
   <script src="../assets/js/common.js"></script>
+  <script type="text/html" id="tpl">
+    {{each data}}
+    <tr>
+      <td class="text-center"><img class="slide" src="{{$value.image}}"></td>
+      <td>{{$value.title}}</td>
+      <td>{{$value.link}}</td>
+      <td class="text-center">
+        <a href="javascript:;" class="btn btn-danger btn-xs del" data-id={{@$value._id}}>删除</a>
+      </td>
+    </tr>
+    {{/each}}
+  </script>
+  <script>
+  //封装一个渲染页面的函数
+  var dataArr = [];
+
+  //发送获得轮播图片列表请求
+  $.ajax({
+    type:'get',
+    url:'/slides',
+    success:function(res){
+      dataArr = res;
+      render();
+    }
+  })
+
+  function render(){
+    let html = template('tpl',{data:dataArr});
+    $('tbody').html(html);
+  }
+
+    //给选择文件注册改变事件
+    $('#image').on('change',function(){
+    let formData = new FormData();
+    formData.append('img',this.files[0]);
+    //发送图片上传请求
+    $.ajax({
+      type:'POST',
+      url:'/upload',
+      data:formData,
+      processData:false,
+      contentType:false,
+      success:function(res){
+          //图片预览
+          $('.thumbnail').show().attr('src',res[0].img);
+          //将图片的地址暂时保存在隐藏域中，等点击提交按钮时和表单的内容一起提交给数据库
+          $('#hidden').val(res[0].img);
+      }
+    })
+  });
+
+
+  //给添加按钮注册点击事件
+  $('#addBtn').on('click',function(){
+    //发送添加轮播图信息的请求
+    let data = $('form').serialize();
+    $.ajax({
+      type:'post',
+      url:'/slides',
+      data:data,
+      success:function(res){
+        dataArr.push(res);
+        render();
+        //添加完成后清空表单内容
+        $('.thumbnail').hide();
+        $('#image').val('');
+        $('#hidden').val('');
+        $('#text').val('');
+        $('#link').val('');
+      }
+    })
+  });
+
+  //完成删除轮播图功能
+  $('tbody').on('click','.del',function(){
+    let id = $(this).attr('data-id');
+    //发送请求
+    if(confirm('您确定要删除吗？')){
+      $.ajax({
+      type:'DELETE',
+      url:'/slides/' + id,
+      success:function(res){
+        let index = dataArr.findIndex(item => item._id == res._id);
+        dataArr.splice(index, 1);
+        render();
+      }
+    })
+    }
+  })
+  
+  </script>
+
   <script>NProgress.done()</script>
 </body>
 </html>
