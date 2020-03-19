@@ -40,9 +40,9 @@
               <h3 class="panel-title">站点内容统计：</h3>
             </div>
             <ul class="list-group">
-              <li class="list-group-item"><strong>10</strong>篇文章（<strong>2</strong>篇草稿）</li>
-              <li class="list-group-item"><strong>6</strong>个分类</li>
-              <li class="list-group-item"><strong>5</strong>条评论（<strong>1</strong>条待审核）</li>
+              <li class="list-group-item posts"></li>
+              <li class="list-group-item category"></li>
+              <li class="list-group-item comment"></li>
             </ul>
           </div>
         </div>
@@ -91,7 +91,34 @@
 
   <script src="../assets/vendors/jquery/jquery.js"></script>
   <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
-  <script>NProgress.done()</script>
   <script src="../assets/js/common.js"></script>
+  <script>
+  //发送查询文章数量的ajax请求
+  $.ajax({
+    type:'get',
+    url:'/posts/count',
+    success:function(res){
+      $('.posts').html('<strong>'+ res.postCount +'</strong>篇文章（<strong>'+ res.draftCount +'</strong>篇草稿）')
+    }
+  });
+  //发送查询分类数量的ajax请求
+  $.ajax({
+    type:'get',
+    url:'/categories/count',
+    success:function(res){
+      $('.category').html('<strong>'+ res.categoryCount +'</strong>个分类')
+    }
+  });
+  //发送查询评论数量的ajax请求,因为没有评论数据，所以为0
+  $.ajax({
+    type:'get',
+    url:'/comments/count',
+    success:function(res){
+      $('.comment').html('<strong>'+ res.commentCount +'</strong>条评论')
+    }
+  })
+  
+  </script>
+  <script>NProgress.done()</script>
 </body>
 </html>
