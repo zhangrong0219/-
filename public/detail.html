@@ -1,3 +1,25 @@
+<script>
+    //封装判断是通过点击文章标题进来的还是在地址栏直接输入list.html的函数,返回值是一个id的话就是文章标题进来的，返回值是-1的话就是直接输入list.html进来的
+    function getParams(key) {
+        //用location.search可以得到地址栏后面从问号开始的参数，比如?id=1234567
+        //需要截取到问号后面的参数，因为有多个参数的话会以&符进行连接，所以要用&符进行分割成数组
+        let params = location.search.substr(1).split('&');
+        //遍历数组，以等号的形式进行分割数组元素
+        for (let i = 0; i < params.length; i++){
+            let item = params[i].split('=');
+            //判断是否传递过来的参数是否和=分割后的数组下标为0的值相同
+            if(key == item[0]){
+                return item[1];
+            }
+        }
+        return -1;
+    };
+    let id = getParams('id')
+    if(id == -1){
+      location.href = 'index.html';
+    }
+    
+    </script>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -128,22 +150,7 @@
     </div>
     <div class="content">
       <div class="article">
-        <div class="breadcrumb">
-          <dl>
-            <dt>当前位置：</dt>
-            <dd><a href="javascript:;">奇趣事</a></dd>
-            <dd>变废为宝！将手机旧电池变为充电宝的Better RE移动电源</dd>
-          </dl>
-        </div>
-        <h2 class="title">
-          <a href="javascript:;">又现酒窝夹笔盖新技能 城里人是不让人活了！</a>
-        </h2>
-        <div class="meta">
-          <span>DUX主题小秘 发布于 2020-06-29</span>
-          <span>分类: <a href="javascript:;">奇趣事</a></span>
-          <span>阅读: (2421)</span>
-          <span>评论: (143)</span>
-        </div>
+        
       </div>
       <div class="panel hots">
         <h3>热门推荐</h3>
@@ -164,5 +171,40 @@
   <script src="assets/js/recommend.js"></script>
   <!-- 引入侧边栏公共部分的随机推荐版块 -->
   <script src="assets/js/public.js"></script>
+  <!-- 拼接文章详情的模板 -->
+  <script type="text/html" id="tpl">
+    <div class="breadcrumb">
+        <dl>
+          <dt>当前位置：</dt>
+          <dd><a href="javascript:;">{{category.title}}</a></dd>
+          <h2 class="title">
+              <a href="javascript:;">{{title}}</a>
+            </h2>
+          <dd>{{content}}</dd>
+        </dl>
+      </div>
+     
+      <div class="meta">
+        <span>{{author.nickName}} 发布于 {{createAt && createAt.substr(0,10)}}</span>
+        <span>分类: <a href="javascript:;">{{category.title}}</a></span>
+        <span>阅读: ({{meta.views}})</span>
+        <span>评论: ({{meta.comments}})</span>
+      </div>
+  </script>
+
+  <script>
+  //发送根据id获取文章
+  $.ajax({
+    type:'get',
+    url:'/posts/' + id,
+    success:function(res){
+      console.log(res);
+      
+      let html = template('tpl',res);
+      $('.article').html(html);
+    }
+  })
+  
+  </script>
 </body>
 </html>
