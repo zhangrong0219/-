@@ -38,4 +38,11 @@ $.ajax({
         let html = template.render(classify,{data:res});
         $('.classify').html(html);
     }
+});
+
+
+//给搜索框注册提交事件
+$('form').on('submit',function(){
+  location.href = 'search.html?keys=' + $('form').find('.keys').val();
+  return false;//阻止提交事件的默认行为
 })
